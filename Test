@@ -1,0 +1,47 @@
+{
+  "formatVersion": "1.0",
+  "description": "Flow zur Terminbuchung mit Prüfung auf Doppelbelegung",
+  "definition": {
+    "trigger": {
+      "type": "Forms",
+      "action": "Neue Antwort eingereicht"
+    },
+    "actions": [
+      {
+        "name": "Antwortdetails abrufen",
+        "action": "Forms.GetResponseDetails"
+      },
+      {
+        "name": "Buchungsliste abrufen",
+        "action": "ExcelOnlineBusiness.ListRows",
+        "file": "DEIN_SHAREPOINT_PFAD",
+        "table": "Tabelle1"
+      },
+      {
+        "name": "Bedingung prüfen",
+        "action": "Condition",
+        "expression": "Termin ist schon vorhanden?"
+      },
+      {
+        "if_true": [
+          {
+            "name": "Absage senden",
+            "action": "Outlook.SendEmail",
+            "text": "Der gewählte Termin ist leider schon vergeben. Bitte wähle einen anderen."
+          }
+        ],
+        "if_false": [
+          {
+            "name": "Buchung speichern",
+            "action": "ExcelOnlineBusiness.AddRow",
+            "werte": {
+              "Vorname": "Antwort.Vorname",
+              "Nachname": "Antwort.Nachname",
+              "Termin": "Antwort.Termin"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
